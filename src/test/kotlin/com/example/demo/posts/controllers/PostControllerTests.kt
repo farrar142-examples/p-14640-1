@@ -24,5 +24,14 @@ class PostControllerTests {
 
 		val postList = mapper.readTree(result.response.contentAsString)
 		assertEquals(postList.size(),10)
+
+		val post = postList.get(0)
+		val postId = post.get("id").asText()
+		val detailResult = mockMvc.perform (get("/api/v1/posts/$postId"))
+			.andExpect(status().isOk)
+			.andReturn()
+		val detailPost = mapper.readTree(detailResult.response.contentAsString)
+		assertEquals(postId,detailPost.get("id").asText())
+
 	}
 }

@@ -19,4 +19,5 @@ class PostService (
 		).let(postRepository::save)
 	}
 	fun findAll():List<Post> = postRepository.findAll().toList()
+	fun findById(id:String): Post? = postRepository.findById(id).orElse(null)
 }

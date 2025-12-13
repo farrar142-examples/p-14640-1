@@ -18,4 +18,9 @@ class PostController(
 	@GetMapping
 	fun getAll() =
 		postService.findAll()
+
+	@GetMapping("/{id}")
+	fun getById(@PathVariable id:String) =
+		postService.findById(id)?.let(ResponseEntity<Post>::ok)
+			?: ResponseEntity.notFound().build()
 }
