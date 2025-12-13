@@ -12,5 +12,10 @@ logging:
     com:
       example:
         demo: debug
+    org:
+      springframework:
+        data:
+          elasticsearch:
+            core: debug
 server:
   port: 8080
