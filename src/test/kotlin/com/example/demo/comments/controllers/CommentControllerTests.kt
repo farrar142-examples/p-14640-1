@@ -46,4 +46,24 @@ class CommentControllerTests {
 			.andExpect(status().isCreated)
 			.andReturn()
 	}
+
+	@Test
+	fun `CommentController Test - Data Not Found`(){
+		val result = mockMvc.perform (get("/api/v1/posts/invalid-id/comments"))
+			.andExpect(status().is4xxClientError)
+			.andReturn()
+		val errorResponse = mapper.readTree(result.response.contentAsString)
+		assert(errorResponse.get("message").asText().contains("Post not found with id: invalid-id"))
+	}
+
+	@Test
+	fun `CommentController Test - Get Comment by ID`(){
+		val post = postService.findAll().first()
+		val comment = commentService.create(post, "Sample Comment", "Sample Author")
+		val result = mockMvc.perform (get("/api/v1/posts/${post.id}/comments/${comment.id}"))
+			.andExpect(status().isOk)
+			.andReturn()
+		val response = mapper.readTree(result.response.contentAsString)
+		assert(response.get("id").asText() == comment.id)
+	}
 }

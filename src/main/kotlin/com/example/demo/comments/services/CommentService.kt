@@ -17,5 +17,6 @@ class CommentService (
 			content = content,
 			author = author
 		).let(commentRepository::save)
+		fun findById(id:String): Comment? = commentRepository.findById(id).orElse(null)
 
 }

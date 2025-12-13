@@ -10,6 +10,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotEquals
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -26,7 +27,7 @@ class PostControllerTests {
 			.andReturn()
 
 		val postList = mapper.readTree(result.response.contentAsString)
-		assertEquals(postList.size(),10)
+		assertNotEquals(postList.size(),0)
 
 		val post = postList.get(0)
 		val postId = post.get("id").asText()

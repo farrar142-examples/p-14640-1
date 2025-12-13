@@ -22,6 +22,16 @@ class CommentController (
 		postService.findById(postId)?.let {
 			commentService.findCommentsByPostId(postId)
 		} ?: throw DataNotFoundException("Post not found with id: $postId")
+
+	@GetMapping("/{commentId}")
+	fun findById(
+		@PathVariable postId: String,
+		@PathVariable commentId: String
+	)= postService.findById(postId)?.let {
+		commentService.findById(commentId)
+			?: throw DataNotFoundException("Comment not found with id: $commentId")
+	} ?: throw DataNotFoundException("Post not found with id: $postId")
+
 	data class CreateCommentRequest(
 		val content:String,
 		val author:String)
