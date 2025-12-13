@@ -26,4 +26,5 @@ class PostService (
 			content = content ?: post.content,
 			author = author ?: post.author,
 		).also{it.id=post.id}.let(postRepository::save)
+	fun delete(post:Post) = postRepository.delete(post)
 }

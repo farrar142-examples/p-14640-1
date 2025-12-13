@@ -4,6 +4,7 @@ import com.example.demo.global.exception.DataNotFoundException
 import com.example.demo.posts.documents.Post
 import com.example.demo.posts.services.PostService
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -55,6 +56,12 @@ class PostController(
 			author = post.author
 		)
 	}
-
+	@DeleteMapping("/{id}")
+	fun delete(@PathVariable id:String): ResponseEntity<Void>{
+		val existingPost = postService.findById(id)
+			?: throw DataNotFoundException("Post not found with id: ${id}")
+		postService.delete(existingPost)
+		return ResponseEntity.noContent().build()
+	}
 
 }

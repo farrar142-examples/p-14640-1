@@ -112,4 +112,36 @@ class PostControllerTests {
 		assertEquals("Updated Post Content", updatedPostResponse.get("content").asText())
 		assertEquals("Updated Author", updatedPostResponse.get("author").asText())
 	}
+
+	@Test
+	fun `PostController Test - Delete Post`(){
+		// First, create a new post to delete
+		val newPost = mapOf(
+			"title" to "Post to Delete",
+			"content" to "Content to be deleted",
+			"author" to "Author to be deleted"
+		)
+		val postJson = mapper.writeValueAsString(newPost)
+
+		val createResult = mockMvc.perform (
+			org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post("/api/v1/posts")
+				.contentType("application/json")
+				.content(postJson)
+		)
+			.andExpect(status().isCreated)
+			.andReturn()
+
+		val createdPost = mapper.readTree(createResult.response.contentAsString)
+		val postId = createdPost.get("id").asText()
+
+		// Now, delete the created post
+		val prevCount = postService.count()
+		val deleteResult = mockMvc.perform (
+			org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete("/api/v1/posts/$postId")
+		)
+			.andExpect(status().isNoContent)
+			.andReturn()
+		val newCount = postService.count()
+		assertEquals(prevCount - 1, newCount, "Post count should decrease by one after deletion")
+	}
 }
