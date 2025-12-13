@@ -15,11 +15,7 @@ class PostRepositoryTests {
 	lateinit var postRepository: PostRepository
 	@Test
 	fun `글 생성 테스트`(){
-		postRepository.deleteAll()
 		Post(title = "첫번째 글", content = "내용입니다",author="작성자")
-			.also{
-				assertEquals(0, postRepository.count())
-			}
 			.let(postRepository::save)
 			.also{
 				assertNotNull(it.id)

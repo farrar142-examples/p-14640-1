@@ -18,4 +18,5 @@ class PostService (
 			author = author
 		).let(postRepository::save)
 	}
+	fun findAll():List<Post> = postRepository.findAll().toList()
 }
