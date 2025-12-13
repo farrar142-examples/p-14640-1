@@ -18,5 +18,11 @@ class CommentService (
 			author = author
 		).let(commentRepository::save)
 		fun findById(id:String): Comment? = commentRepository.findById(id).orElse(null)
+	fun update(comment: Comment, content:String?, author:String?)=
+		Comment(
+			postId = comment.postId,
+			content = content ?: comment.content,
+			author = author ?: comment.author
+		).also{it.id=comment.id}.let(commentRepository::save)
 
 }

@@ -8,8 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc
 import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
 @SpringBootTest
@@ -48,7 +50,7 @@ class CommentControllerTests {
 	}
 
 	@Test
-	fun `CommentController Test - Data Not Found`(){
+	fun `CommentController Test - Get Comment by ID Not Found`(){
 		val result = mockMvc.perform (get("/api/v1/posts/invalid-id/comments"))
 			.andExpect(status().is4xxClientError)
 			.andReturn()
@@ -64,6 +66,30 @@ class CommentControllerTests {
 			.andExpect(status().isOk)
 			.andReturn()
 		val response = mapper.readTree(result.response.contentAsString)
+		assert(response.get("id").asText() == comment.id)
+	}
+
+	@Test
+	fun `CommentController Test - Put Comment`(){
+		val post = postService.findAll().first()
+		val comment = commentService.create(post, "Old Comment", "Old Author")
+		val updatedComment = mapOf(
+			"content" to "Updated Comment",
+			"author" to "Updated Author"
+		)
+		val commentJson = mapper.writeValueAsString(updatedComment)
+		val count = commentService.count()
+		val result = mockMvc.perform(
+			put("/api/v1/posts/${post.id}/comments/${comment.id}")
+				.contentType("application/json")
+				.content(commentJson)
+		)
+			.andExpect(status().isOk)
+			.andReturn()
+		assert(commentService.count() == count)
+		val response = mapper.readTree(result.response.contentAsString)
+		assert(response.get("content").asText() == "Updated Comment")
+		assert(response.get("author").asText() == "Updated Author")
 		assert(response.get("id").asText() == comment.id)
 	}
 }
