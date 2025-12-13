@@ -2,12 +2,14 @@ package com.example.demo.comments.controllers
 
 import com.example.demo.comments.services.CommentService
 import com.example.demo.posts.services.PostService
+import com.fasterxml.jackson.databind.ObjectMapper
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
 @SpringBootTest
@@ -19,12 +21,29 @@ class CommentControllerTests {
 	lateinit var commentService: CommentService
 	@Autowired
 	lateinit var postService: PostService
-
+	val mapper = ObjectMapper()
 	@Test
 	fun `CommentController Test - Get Comments by Post ID`(){
 		val post = postService.findAll().first()
 		mockMvc.perform(get("/api/v1/posts/${post.id}/comments"))
 			.andExpect(status().isOk)
+			.andReturn()
+	}
+
+	@Test
+	fun `CommentController Test - Post Comment`(){
+		val post = postService.findAll().first()
+		val newComment = mapOf(
+			"content" to "This is a test comment.",
+			"author" to "Test Author"
+		)
+		val commentJson = mapper.writeValueAsString(newComment)
+		mockMvc.perform(
+			post("/api/v1/posts/${post.id}/comments")
+				.content(commentJson)
+				.contentType("application/json")
+		)
+			.andExpect(status().isCreated)
 			.andReturn()
 	}
 }
