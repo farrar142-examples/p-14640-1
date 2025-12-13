@@ -39,6 +39,22 @@ class PostController(
 		)
 		return ResponseEntity.status(201).body(createdPost)
 	}
+	data class UpdatePostRequest(
+		val title:String?,
+		val content:String?,
+		val author:String?
+	)
+	@PutMapping("/{id}")
+	fun update(@PathVariable id:String, @RequestBody post: UpdatePostRequest): Post {
+		val existingPost = postService.findById(id)
+			?: throw DataNotFoundException("Post not found with id: ${id}")
+		return postService.update(
+			existingPost,
+			title = post.title,
+			content = post.content,
+			author = post.author
+		)
+	}
 
 
 }

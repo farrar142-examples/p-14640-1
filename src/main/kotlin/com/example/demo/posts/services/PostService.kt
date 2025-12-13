@@ -20,4 +20,13 @@ class PostService (
 	}
 	fun findAll():List<Post> = postRepository.findAll().toList()
 	fun findById(id:String): Post? = postRepository.findById(id).orElse(null)
+	fun update(post: Post,title:String?,content:String?,author:String?): Post{
+		val updatedPost = Post(
+			title = title?: post.title,
+			content = content?: post.content,
+			author = author?: post.author,
+		)
+		updatedPost.id = post.id
+		return postRepository.save(updatedPost)
+	}
 }
