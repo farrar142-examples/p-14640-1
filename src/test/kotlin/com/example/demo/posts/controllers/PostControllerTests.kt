@@ -1,5 +1,6 @@
 package com.example.demo.posts.controllers
 
+import com.example.demo.posts.services.PostService
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -15,6 +16,8 @@ import kotlin.test.assertEquals
 class PostControllerTests {
 	@Autowired
 	lateinit var mockMvc: MockMvc
+	@Autowired
+	lateinit var postService: PostService
 	val mapper = ObjectMapper()
 	@Test
 	fun `PostController Test`(){
@@ -65,5 +68,48 @@ class PostControllerTests {
 		assertEquals("New Post Title", createdPost.get("title").asText())
 		assertEquals("New Post Content", createdPost.get("content").asText())
 		assertEquals("New Author", createdPost.get("author").asText())
+	}
+	@Test
+	fun `PostController Test - Update Post`(){
+		// First, create a new post to update
+		val newPost = mapOf(
+			"title" to "Post to Update",
+			"content" to "Content before update",
+			"author" to "Author before update"
+		)
+		val postJson = mapper.writeValueAsString(newPost)
+
+		val createResult = mockMvc.perform (
+			org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post("/api/v1/posts")
+				.contentType("application/json")
+				.content(postJson)
+		)
+			.andExpect(status().isCreated)
+			.andReturn()
+
+		val createdPost = mapper.readTree(createResult.response.contentAsString)
+		val postId = createdPost.get("id").asText()
+
+		// Now, update the created post
+		val updatedPost = mapOf(
+			"title" to "Updated Post Title",
+			"content" to "Updated Post Content",
+			"author" to "Updated Author"
+		)
+		val updatedPostJson = mapper.writeValueAsString(updatedPost)
+		val prevCount = postService.count()
+		val updateResult = mockMvc.perform (
+			org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put("/api/v1/posts/$postId")
+				.contentType("application/json")
+				.content(updatedPostJson)
+		)
+			.andExpect(status().isOk)
+			.andReturn()
+		val newCount = postService.count()
+		assertEquals(prevCount,newCount,"Post count should remain the same after update")
+		val updatedPostResponse = mapper.readTree(updateResult.response.contentAsString)
+		assertEquals("Updated Post Title", updatedPostResponse.get("title").asText())
+		assertEquals("Updated Post Content", updatedPostResponse.get("content").asText())
+		assertEquals("Updated Author", updatedPostResponse.get("author").asText())
 	}
 }
