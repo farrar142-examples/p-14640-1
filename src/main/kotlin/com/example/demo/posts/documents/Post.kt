@@ -1,5 +1,6 @@
 package com.example.demo.posts.documents
 
+import com.example.demo.global.elasticsearch.documents.BaseDocument
 import org.springframework.data.annotation.Id
 import org.springframework.data.elasticsearch.annotations.DateFormat
 import org.springframework.data.elasticsearch.annotations.Document
@@ -15,11 +16,4 @@ class Post (
 	val content:String,
 	@Field(type = FieldType.Keyword)
 	val author:String,
-	@Field(type = FieldType.Date, format = [DateFormat.date_hour_minute_second_millis])
-	val createdAt: LocalDateTime = LocalDateTime.now(),
-	@Field(type = FieldType.Date, format = [DateFormat.date_hour_minute_second_millis])
-	val modifedAt: LocalDateTime = LocalDateTime.now(),
-){
-	@Id
-	lateinit var id:String
-}
+): BaseDocument()
