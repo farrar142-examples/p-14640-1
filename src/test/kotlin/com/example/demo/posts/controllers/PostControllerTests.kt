@@ -43,4 +43,27 @@ class PostControllerTests {
 		val errorResponse = mapper.readTree(result.response.contentAsString)
 		assertEquals("Post not found with id: invalid-id",errorResponse.get("message").asText())
 	}
+
+	@Test
+	fun `PostController Test - Create Post`(){
+		val newPost = mapOf(
+			"title" to "New Post Title",
+			"content" to "New Post Content",
+			"author" to "New Author"
+		)
+		val postJson = mapper.writeValueAsString(newPost)
+
+		val result = mockMvc.perform (
+			org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post("/api/v1/posts")
+				.contentType("application/json")
+				.content(postJson)
+		)
+			.andExpect(status().isCreated)
+			.andReturn()
+
+		val createdPost = mapper.readTree(result.response.contentAsString)
+		assertEquals("New Post Title", createdPost.get("title").asText())
+		assertEquals("New Post Content", createdPost.get("content").asText())
+		assertEquals("New Author", createdPost.get("author").asText())
+	}
 }
