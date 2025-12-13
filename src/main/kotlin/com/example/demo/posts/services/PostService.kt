@@ -1,5 +1,6 @@
 package com.example.demo.posts.services
 
+import com.example.demo.posts.documents.Post
 import com.example.demo.posts.repositories.PostRepository
 import org.springframework.stereotype.Service
 
@@ -9,5 +10,12 @@ class PostService (
 ){
 	fun count(): Long{
 		return postRepository.count()
+	}
+	fun create(title:String,content:String,author:String): Post{
+		return Post(
+			title = title,
+			content = content,
+			author = author
+		).let(postRepository::save)
 	}
 }

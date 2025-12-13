@@ -13,6 +13,18 @@ class BaseInitData(
 	val logger = getLogger()
 	@Bean
 	fun baseInitDataRunner() = ApplicationRunner{
+		if(postService.count() > 0L){
+			logger.debug("기본 데이터가 이미 존재합니다. ${postService.count()}")
+			return@ApplicationRunner
+		}
+		logger.debug("기본 데이터 생성 시작")
+		for(i in 1..10){
+			postService.create(
+				title = "기본 글 제목 $i",
+				content = "기본 글 내용 $i",
+				author = "관리자"
+			)
+		}
 		logger.debug("기본 데이터 생성 완료 ${postService.count()}")
 	}
 }
