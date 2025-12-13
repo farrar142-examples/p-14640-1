@@ -66,4 +66,17 @@ class CommentController (
 			)
 		} ?: throw DataNotFoundException("Comment not found with id: $commentId")
 	}
+
+	@DeleteMapping("/{commentId}")
+	fun delete(
+		@PathVariable postId: String,
+		@PathVariable commentId: String
+	)
+	= postService.findById(postId)?.let { post ->
+		commentService.findById(commentId)
+			?.let(commentService::delete)
+			.let {
+				ResponseEntity.noContent().build<Void>()
+			} ?: throw DataNotFoundException("Comment not found with id: $commentId")
+	}
 }

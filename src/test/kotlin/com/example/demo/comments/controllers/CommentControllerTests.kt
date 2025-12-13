@@ -92,4 +92,17 @@ class CommentControllerTests {
 		assert(response.get("author").asText() == "Updated Author")
 		assert(response.get("id").asText() == comment.id)
 	}
+
+	@Test
+	fun `CommentController Test - Delete Comment`(){
+		val post = postService.findAll().first()
+		val comment = commentService.create(post, "Comment to be deleted", "Author")
+		val count = commentService.count()
+		val result = mockMvc.perform(
+			delete("/api/v1/posts/${post.id}/comments/${comment.id}")
+		)
+			.andExpect(status().isNoContent)
+			.andReturn()
+		assert(commentService.count() == count - 1)
+	}
 }

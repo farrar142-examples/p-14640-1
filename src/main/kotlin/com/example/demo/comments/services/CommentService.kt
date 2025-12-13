@@ -24,5 +24,6 @@ class CommentService (
 			content = content ?: comment.content,
 			author = author ?: comment.author
 		).also{it.id=comment.id}.let(commentRepository::save)
+	fun delete(comment:Comment) = commentRepository.delete(comment)
 
 }
