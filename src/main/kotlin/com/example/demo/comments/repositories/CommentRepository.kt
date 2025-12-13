@@ -4,4 +4,5 @@ import com.example.demo.comments.documents.Comment
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository
 
 interface CommentRepository : ElasticsearchRepository<Comment,String> {
+	fun findByPostId(postId: String): List<Comment>
 }
