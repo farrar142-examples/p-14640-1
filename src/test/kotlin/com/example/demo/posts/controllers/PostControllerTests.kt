@@ -34,4 +34,13 @@ class PostControllerTests {
 		assertEquals(postId,detailPost.get("id").asText())
 
 	}
+
+	@Test
+	fun `PostController Test - Data Not Found`(){
+		val result = mockMvc.perform (get("/api/v1/posts/invalid-id"))
+			.andExpect(status().is4xxClientError)
+			.andReturn()
+		val errorResponse = mapper.readTree(result.response.contentAsString)
+		assertEquals("Post not found with id: invalid-id",errorResponse.get("message").asText())
+	}
 }
